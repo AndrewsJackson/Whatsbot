@@ -1,11 +1,16 @@
 // leitor de qr code
-const qrcode = require('qrcode-terminal');
-const { Client, Buttons, List, MessageMedia } = require('whatsapp-web.js'); // Mudança Buttons
-const client = new Client();
-// serviço de leitura do qr code
-client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
+const qrcode = require('qrcode'); // Adiciona suporte para salvar QR codes em arquivos
+const fs = require('fs'); // Biblioteca nativa para lidar com arquivos
+
+client.on('qr', async (qr) => {
+    try {
+        await qrcode.toFile('qrcode.png', qr); // Salva como um arquivo 'qrcode.png'
+        console.log('QR Code gerado e salvo como qrcode.png.');
+    } catch (error) {
+        console.error('Erro ao gerar QR Code:', error);
+    }
 });
+
 // apos isso ele diz que foi tudo certo
 client.on('ready', () => {
     console.log('Tudo certo! WhatsApp conectado.');
