@@ -1,14 +1,39 @@
 // leitor de qr code
-const qrcode = require('qrcode'); // Adiciona suporte para salvar QR codes em arquivos
-const fs = require('fs'); // Biblioteca nativa para lidar com arquivos
+const qrcode = require('qrcode'); // Para salvar o QR code como imagem
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const express = require('express'); // Para servir o QR code no navegador
 
+const app = express();
+const client = new Client({
+    authStrategy: new LocalAuth()
+});
+
+// Gera o QR code e salva como imagem
 client.on('qr', async (qr) => {
     try {
-        await qrcode.toFile('qrcode.png', qr); // Salva como um arquivo 'qrcode.png'
-        console.log('QR Code gerado e salvo como qrcode.png.');
+        await qrcode.toFile('qrcode.png', qr); // Salva o QR code como arquivo
+        console.log('QR code salvo como qrcode.png. Acesse /qrcode para visualizar.');
     } catch (error) {
-        console.error('Erro ao gerar QR Code:', error);
+        console.error('Erro ao gerar o QR code:', error);
     }
+});
+
+// Servidor HTTP para acessar o QR code
+app.use('/static', express.static(__dirname)); // Serve arquivos estáticos da pasta atual
+app.get('/qrcode', (req, res) => {
+    res.send('<h1>QR Code</h1><img src="/static/qrcode.png" alt="QR Code">');
+});
+
+// Inicia o cliente do WhatsApp
+client.on('ready', () => {
+    console.log('WhatsApp conectado!');
+});
+client.initialize();
+
+// Inicia o servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}. Acesse http://localhost:${PORT}/qrcode para visualizar o QR code.`);
 });
 
 // apos isso ele diz que foi tudo certo
