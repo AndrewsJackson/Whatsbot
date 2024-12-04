@@ -1,41 +1,11 @@
 // leitor de qr code
-const qrcode = require('qrcode'); // Para salvar o QR code como imagem
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const express = require('express'); // Para servir o QR code no navegador
-
-const app = express();
-const client = new Client({
-    authStrategy: new LocalAuth()
+const qrcode = require('qrcode-terminal');
+const { Client, Buttons, List, MessageMedia } = require('whatsapp-web.js'); // Mudança Buttons
+const client = new Client();
+// serviço de leitura do qr code
+client.on('qr', qr => {
+    qrcode.generate(qr, {small: true});
 });
-
-// Gera o QR code e salva como imagem
-client.on('qr', async (qr) => {
-    try {
-        await qrcode.toFile('qrcode.png', qr); // Salva o QR code como arquivo
-        console.log('QR code salvo como qrcode.png. Acesse /qrcode para visualizar.');
-    } catch (error) {
-        console.error('Erro ao gerar o QR code:', error);
-    }
-});
-
-// Servidor HTTP para acessar o QR code
-app.use('/static', express.static(__dirname)); // Serve arquivos estáticos da pasta atual
-app.get('/qrcode', (req, res) => {
-    res.send('<h1>QR Code</h1><img src="/static/qrcode.png" alt="QR Code">');
-});
-
-// Inicia o cliente do WhatsApp
-client.on('ready', () => {
-    console.log('WhatsApp conectado!');
-});
-client.initialize();
-
-// Inicia o servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}. Acesse http://localhost:${PORT}/qrcode para visualizar o QR code.`);
-});
-
 // apos isso ele diz que foi tudo certo
 client.on('ready', () => {
     console.log('Tudo certo! WhatsApp conectado.');
