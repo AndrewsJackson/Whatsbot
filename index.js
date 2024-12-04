@@ -28,7 +28,7 @@ client.on('message', async msg => {
         await delay(5000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from,'Olá '+ name.split(" ")[0] + ' ,já conhece o Botox?\n\n1 - Sim\n2 - Não, gostaria de mais informações\n3 - Outras perguntas'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from,'Olá '+ name.split(" ")[0] + 'já conhece o Botox?\n\n1 - Sim\n2 - Não, gostaria de mais informações\n3 - Outras perguntas'); //Primeira mensagem de texto
        
     
         
